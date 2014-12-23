@@ -58,6 +58,7 @@ def list_by_path(manifest_name, path, cache):
     resources = []
     path = os.path.abspath(path)
     basename = os.path.basename
+    recurse = True
     for d, dirs, files in os.walk(path, topdown=True, followlinks=True):
         if 'CATKIN_IGNORE' in files:
             del dirs[:]
@@ -92,6 +93,13 @@ def list_by_path(manifest_name, path, cache):
         elif 'rospack_nosubdirs' in files:
             del dirs[:]
             continue  #leaf
+        elif not recurse:
+            del dirs[:]
+            continue
+        elif 'rospack_norecurse' in files:
+            recurse = False
+        else:
+            recurse = True
         # remove hidden dirs (esp. .svn/.git)
         [dirs.remove(di) for di in dirs if di[0] == '.']
     return resources
